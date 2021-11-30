@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <h1>Covid19 오늘 현황</h1>
+    <table border="1" cellspacing="0.1">
+        <thead>
+            <tr>
+                <th>지역명</th>
+                <th>확진자</th>
+                <th>사망자</th>
+                <th>격리해제</th>
+                <th>1차접종</th>
+                <th>2차접종</th>
+                <th>격리중</th>
+            </tr>
+        </thead>
+        <tbody id="list-body">
+
+        </tbody>
+    </table>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/series-label.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script>
+        (() => {
+            const xhr = new XMLHttpRequest();
+            const method = "GET";
+            const url = "http://itpaper.co.kr/demo/covid19/now.php";
+
+            xhr.onreadystatechange = e => {
+                const {
+                    target
+                } = e;
+
+                if (target.readyState == XMLHttpRequest.DONE) {
+                    if (target.status == 200) {
+                        const req = JSON.parse(target.response);
+                        const listBody = document.querySelector("#list-body");
+                        req.state.map((v, i) => {
+                            const tr = document.createElement("tr");
+                            const td1 = document.createElement("td");
+                            td1.innerHTML = v.region;
+                            const td2 = document.createElement("td")
+                            td2.innerHTML = v.confirmed - v.confirmed_prev;
+                            const td3 = document.createElement("td")
+                            td3.innerHTML = v.death - v.death_prev;
+                            const td4 = document.createElement("td")
+                            td4.innerHTML = v.released - v.released_prev;
+                            const td5 = document.createElement("td")
+                            td5.innerHTML = v.vaccinatedOnce - v.vaccinatedOnce_prev;
+                            const td6 = document.createElement("td")
+                            td6.innerHTML = v.vaccinatedFully - v.vaccinatedFully_prev;
+                            const td7 = document.createElement("td")
+                            let todayActive = v.active - v.active_prev;
+                            if (todayActive <= 0) {
+                                todayActive = 0;
+                                td7.innerHTML = todayActive;
+                            } else {
+                                td7.innerHTML = todayActive;
+                            };
+
+                            tr.appendChild(td1);
+                            tr.appendChild(td2);
+                            tr.appendChild(td3);
+                            tr.appendChild(td4);
+                            tr.appendChild(td5);
+                            tr.appendChild(td6);
+                            tr.appendChild(td7);
+
+                            listBody.appendChild(tr);
+
+
+
+                        });
+                    } else {
+                        const s = parseInt(target.status / 100);
+                        let errMsg = null;
+                        if (s == 4) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청 주소가 잘못되었습니다.";
+                        } else if (s == 5) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 서버의 응답이 없습니다.";
+                        } else {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청에 실패했습니다.";
+                        }
+                        alert(errMsg);
+                    }
+                }
+            };
+            xhr.open(method, url);
+            xhr.send();
+
+
+        })();
+    </script>
+</body>
+
+</html>

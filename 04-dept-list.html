@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <h1>Simple Get</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>학과번호</th>
+                <th>학과명</th>
+                <th>학과위치</th>
+            </tr>
+        </thead>
+        <tbody id="list-body"></tbody>
+    </table>
+
+    <script>
+        (() => {
+            const xhr = new XMLHttpRequest();
+            const method = "GET";
+            const url = "backend/dept_list.json";
+
+            xhr.onreadystatechange = e => {
+                const {
+                    target
+                } = e;
+
+                if (target.readyState == XMLHttpRequest.DONE) {
+                    if (target.status == 200) {
+                        const req = JSON.parse(target.response);
+                        const listBody = document.querySelector("#list-body");
+                        req.item.map((v, i) => {
+                            console.log(req.item);
+                            const tr = document.createElement("tr");
+
+                            const td1 = document.createElement("td");
+                            td1.innerHTML = v.deptno;
+
+                            const td2 = document.createElement("td");
+                            td2.innerHTML = v.dname;
+
+                            const td3 = document.createElement("td");
+                            td3.innerHTML = v.loc;
+
+                            tr.appendChild(td1);
+                            tr.appendChild(td2);
+                            tr.appendChild(td3);
+
+                            listBody.appendChild(tr);
+                        });
+                    } else {
+                        const s = parseInt(target.status / 100);
+                        let errMsg = null;
+                        if (s == 4) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청 주소가 잘못되었습니다.";
+                        } else if (s == 5) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 서버의 응답이 없습니다.";
+                        } else {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청에 실패했습니다.";
+                        }
+                        alert(errMsg);
+                    }
+                }
+            };
+            xhr.open(method, url);
+            xhr.send();
+
+
+        })();
+    </script>
+</body>
+
+</html>
