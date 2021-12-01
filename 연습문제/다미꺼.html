@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <h1>영화진흥위원회 박스오피스 순위</h1>
+    <input type="date" id="targetDt" />
+    <table border="1">
+        <thead>
+            <tr>
+                <th>순위</th>
+                <th>영화제목</th>
+                <th>관객수</th>
+                <th>개봉일</th>
+            </tr>
+        </thead>
+        <tbody id="list-body"></tbody>
+    </table>
+    <div id="graph-container" style="width: 900px; height: 900px;">
+        <canvas id="Chart"></canvas>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script>
+        const getMovieRank = (targetDt) => {
+            const xhr = new XMLHttpRequest();
+            const method = "GET";
+            const url =
+                "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=051c013e36fb954703d93b439b33f307&targetDt=" +
+                targetDt;
+
+            xhr.onreadystatechange = (e) => {
+                const {
+                    target
+                } = e;
+
+                if (target.readyState == XMLHttpRequest.DONE) {
+                    if (target.status == 200) {
+                        const req = JSON.parse(target.response);
+                        console.log(req);
+                        const listBody = document.querySelector("#list-body");
+
+                        // 영화 이름 다 넣는 것
+                        const movie_labels = new Array();
+
+                        // 영화 관객수  넣는 것
+                        const audiCnt_data = new Array();
+
+                        Array.from(listBody.getElementsByTagName("tr")).forEach((v, i) => {
+                            listBody.removeChild(v);
+                        });
+
+                        req.boxOfficeResult.dailyBoxOfficeList.map((v, i) => {
+                            const tr = document.createElement("tr");
+
+                            const td1 = document.createElement("td");
+                            td1.innerHTML = v.rank;
+
+                            const td2 = document.createElement("td");
+                            td2.innerHTML = v.movieNm;
+
+                            movie_labels[i] = v.movieNm;
+
+                            const td3 = document.createElement("td");
+                            td3.innerHTML = v.audiCnt;
+
+                            audiCnt_data[i] = v.audiCnt;
+
+                            const td4 = document.createElement("td");
+                            td4.innerHTML = v.openDt;
+
+                            tr.appendChild(td1);
+                            tr.appendChild(td2);
+                            tr.appendChild(td3);
+                            tr.appendChild(td4);
+
+                            listBody.appendChild(tr);
+                        });
+                        console.log(movie_labels);
+
+                        const myChart = document.getElementById("Chart").getContext("2d");
+
+                        const barChar = new Chart(myChart, {
+                            type: "bar", // pie, line, donut, polarArea ...
+                            data: {
+                                labels: movie_labels,
+                                datasets: [{
+                                    label: "관객수",
+                                    data: audiCnt_data,
+                                    backgroundColor: [
+                                        "rgba(255, 99, 132, 1)",
+                                        "rgba(255, 159, 64, 1)",
+                                        "rgba(255, 206, 86, 1)",
+                                        "rgba(54, 162, 235, 1)",
+                                        "rgba(75, 192, 192, 1)",
+                                        "rgba(153, 102, 255, 1)",
+                                    ],
+                                    borderWidth: 2,
+                                    barThickness: 36,
+                                }, ],
+                            },
+                        });
+
+
+                    } else {
+                        const s = parseInt(target.status / 100);
+                        let errMsg = null;
+
+                        if (s == 4) {
+                            errMsg =
+                                "[" +
+                                target.status +
+                                "]" +
+                                target.statusText +
+                                "- 요청 주소가 잘못되었습니다.";
+                        } else if (s == 5) {
+                            errMsg =
+                                "[" +
+                                target.status +
+                                "]" +
+                                target.statusText +
+                                "- 서버의 응답이 없습니다.";
+                        } else {
+                            errMsg =
+                                "[" +
+                                target.status +
+                                "]" +
+                                target.statusText +
+                                "- 요청에 실패했습니다.";
+                        }
+                        alert(errMsg);
+                    }
+                }
+            };
+
+            xhr.open(method, url);
+            xhr.send();
+        };
+
+        document.querySelector("#targetDt").addEventListener("change", (e) => {
+            const date = e.currentTarget.value.replaceAll("-", "");
+            console.log(date);
+            getMovieRank(date);
+        });
+
+        /* 페이지 열림과 동시에 실행됨 */
+        const date = new Date();
+        // 하루 전을 계산
+        const b = date.getDate() - 1;
+        date.setDate(b);
+
+        const yy = date.getFullYear();
+        const mm = date.getMonth() + 1;
+        const dd = date.getDate();
+
+        // 한자리 수 앞에 0 붙여아해서
+        if (mm < 10) {
+            mm = "0" + mm;
+        }
+        if (dd < 10) {
+            dd = "0" + dd;
+        }
+
+        const sendDate = "" + yy + mm + dd;
+        console.log(sendDate);
+        getMovieRank(sendDate);
+    </script>
+
+</body>
+
+</html>
+
+</body>
+
+</html>

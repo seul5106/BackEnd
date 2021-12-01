@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        dt {
+            font-weight: bold;
+            margin: 10px 10px;
+            font-size: 20px;
+        }
+        
+        dt:before {
+            content: "@";
+            padding-right: 5px;
+        }
+        
+        dd {
+            font-weight: normal;
+            margin-bottom: 30px;
+            border-left: 5px #d5d5d5 solid;
+            padding-left: 15px;
+            font-size: 16px;
+        }
+        
+        #dept-item {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Dept Item</h1>
+
+    <select class="dropdown">
+        <option value="">---- 선택하세요 ----</option>
+        <option value="101">컴퓨터공학과</option>
+        <option value="102">멀티미디어학과</option>
+        <option value="201">전자공학과</option>
+        <option value="202">기계공학과</option>
+    </select>
+
+    <dl id="dept-item">
+        <dt>학과번호</dt>
+        <dd class="deptno"></dd>
+        <dt>학과명</dt>
+        <dd class="dname"></dd>
+        <dt>학과위치</dt>
+        <dd class="loc"></dd>
+    </dl>
+
+    <script>
+        const dropdown = document.querySelectorAll(".dropdown");
+
+        dropdown.forEach((v, i) => {
+            v.addEventListener("change", e => {
+                e.preventDefault();
+
+                const current = e.currentTarget;
+                const deptno = current[current.selectedIndex].value;
+                console.log(deptno);
+
+                document.querySelector("#dept-item").style.display = "block"
+
+                const xhr = new XMLHttpRequest();
+                const method = "GET";
+                const url = "http://itpaper.co.kr/data/dept_item.php?deptno=" + deptno;
+
+                xhr.onreadystatechange = e => {
+                    const {
+                        target
+                    } = e;
+
+                    if (target.readyState == XMLHttpRequest.DONE) {
+                        if (target.status == 200) {
+                            const req = JSON.parse(target.response);
+                            document.querySelector(".deptno").innerHTML = req.deptno;
+                            document.querySelector(".dname").innerHTML = req.dname;
+                            document.querySelector(".loc").innerHTML = req.loc;
+
+                        } else {
+                            const s = parseInt(target.status / 100);
+                            let errMsg = null;
+                            if (s == 4) {
+                                errMsg = "[" + target.status + "]" + target.statusText + "- 요청 주소가 잘못되었습니다.";
+                            } else if (s == 5) {
+                                errMsg = "[" + target.status + "]" + target.statusText + "- 서버의 응답이 없습니다.";
+                            } else {
+                                errMsg = "[" + target.status + "]" + target.statusText + "- 요청에 실패했습니다.";
+                            }
+                            alert(errMsg);
+                        }
+                    }
+                };
+                xhr.open(method, url);
+                xhr.send();
+            });
+        });
+    </script>
+</body>
+
+</html>
