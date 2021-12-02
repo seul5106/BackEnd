@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        fieldset {
+            margin-bottom: 50px;
+        }
+        
+        #list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        #list li {
+            width: 100%;
+            height: 200px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        
+        #list li a {
+            border: 1px solid #ccc;
+            float: left;
+            display: block;
+            width: 20%;
+            height: 180px;
+            background-position: center center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: scroll;
+            text-decoration: none;
+            color: #000;
+            padding-right: 5px;
+        }
+        
+        #list li span {
+            width: 70%;
+            float: left;
+            display: block;
+            font-size: 14px;
+            text-align: left;
+        }
+        
+        #list li span h2 {
+            width: 20%;
+            float: left;
+            font-size: 14px;
+            text-align: right;
+            margin: 2px 0;
+            margin-right: 4px;
+        }
+        
+        #list li span p {
+            width: 60%;
+            float: left;
+            margin: 2px 0;
+        }
+        
+        #list:after {
+            content: "";
+            display: block;
+            float: none;
+            clear: both;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Kakao Image Search</h1>
+
+    <form id="searchForm">
+        <fieldset>
+            <input type="search" id="query" placeholder="Search ..." />
+            <button type="submit">검색</button>
+            <button type="button" id="sort">가격정렬</button>
+        </fieldset>
+    </form>
+
+    <ul id="list">
+
+    </ul>
+
+
+
+    <script>
+        let data = null;
+        const list = document.querySelector("#list");
+
+        function get_image_search(query) {
+            Array.from(list.getElementsByTagName("li")).map((v, i) => {
+                list.removeChild(v);
+            });
+            const xhr = new XMLHttpRequest();
+            const method = "GET";
+            const url = "https://dapi.kakao.com/v3/search/book?query=" + query + "&page=1&size=50";
+
+            xhr.onreadystatechange = e => {
+                const {
+                    target
+                } = e;
+
+                if (target.readyState == XMLHttpRequest.DONE) {
+                    if (target.status == 200) {
+                        const req = JSON.parse(target.response);
+
+
+                        data = req.documents;
+                        showData();
+
+                    } else {
+                        const s = parseInt(target.status / 100);
+                        let errMsg = null;
+                        if (s == 4) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청 주소가 잘못되었습니다.";
+                        } else if (s == 5) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 서버의 응답이 없습니다.";
+                        } else {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청에 실패했습니다.";
+                        }
+                        alert(errMsg);
+                    }
+                }
+            };
+            xhr.open(method, url);
+            xhr.setRequestHeader("Authorization", "KakaoAK a198b5bd50d482160fd20f1a06e9b908");
+            xhr.send();
+        }
+
+        document.querySelector("#searchForm").addEventListener("submit", e => {
+            e.preventDefault();
+
+            const queryField = document.querySelector("#query");
+            const query = queryField.value.trim();
+
+            if (!query) {
+                alert("검색어를 입력하세요.");
+                queryField.focus();
+                return
+            }
+
+            get_image_search(query);
+        });
+        document.querySelector("#sort").addEventListener("click", e => {
+            for (let i = 0; data.length > i; i++) {
+                for (let j = i + 1; data.length > j; j++) {
+                    if (data[i].price > data[j].price) {
+                        var tmp = data[i];
+                        data[i] = data[j];
+                        data[j] = tmp;
+                    }
+                }
+            }
+
+            console.log(data);
+            showData();
+        });
+
+        function showData() {
+            Array.from(list.getElementsByTagName("li")).map((v, i) => {
+                list.removeChild(v);
+            });
+            data.map((v, i) => {
+
+                const li = document.createElement("li");
+
+                const a = document.createElement("a");
+                a.setAttribute("href", v.url);
+                a.setAttribute("target", "_blank");
+                a.setAttribute("title", v.title);
+                a.style.backgroundImage = "url(" + v.thumbnail + ")";
+
+                const span1 = document.createElement("span");
+                const p1 = document.createElement("p");
+                const h21 = document.createElement("h2");
+
+                const span2 = document.createElement("span");
+                const p2 = document.createElement("p");
+                const h22 = document.createElement("h2");
+
+                h21.innerHTML = "도서제목: ";
+                p1.innerHTML = v.title;
+
+                h22.innerHTML = "가격: ";
+                p2.innerHTML = v.price;
+
+                li.appendChild(a);
+
+                li.appendChild(span1);
+                span1.appendChild(h21);
+                span1.appendChild(p1);
+
+                li.appendChild(span2);
+                span2.appendChild(h22);
+                span2.appendChild(p2);
+
+                list.appendChild(li);
+
+            });
+
+        }
+    </script>
+</body>
+
+</html>

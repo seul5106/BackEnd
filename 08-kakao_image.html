@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        #list li {
+            width: 150px;
+            height: 180px;
+            float: left;
+            margin: 10px;
+        }
+        
+        #list li a {
+            display: block;
+            width: 150px;
+            height: 150px;
+            background-position: center center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: scroll;
+            text-decoration: none;
+            color: #000;
+        }
+        
+        #list li span {
+            display: block;
+            font-size: 14px;
+            padding: 5px 10px;
+            text-align: center;
+        }
+        
+        #list:after {
+            content: "";
+            display: block;
+            float: none;
+            clear: both;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Kakao Image Search</h1>
+
+    <form id="searchForm">
+        <fieldset>
+            <input type="search" id="query" placeholder="Search ..." />
+            <button type="submit">검색</button>
+        </fieldset>
+    </form>
+
+    <ul id="list">
+
+    </ul>
+
+    <script>
+        function get_image_search(query) {
+            const list = document.querySelector("#list");
+
+            Array.from(list.getElementsByTagName("li")).map((v, i) => {
+                list.removeChild(v);
+            });
+            const xhr = new XMLHttpRequest();
+            const method = "GET";
+            const url = "https://dapi.kakao.com/v2/search/image?query=" + query + "&page=1&size=50";
+
+            xhr.onreadystatechange = e => {
+                const {
+                    target
+                } = e;
+
+                if (target.readyState == XMLHttpRequest.DONE) {
+                    if (target.status == 200) {
+                        const req = JSON.parse(target.response);
+                        const listBody = document.querySelector("#list-body");
+                        req.documents.map((v, i) => {
+                            const li = document.createElement("li");
+
+                            const a = document.createElement("a");
+                            a.setAttribute("href", v.doc_url);
+                            a.setAttribute("target", "_blank");
+                            a.setAttribute("title", v.display_sitename);
+                            a.style.backgroundImage = "url(" + v.thumbnail_url + ")";
+
+                            const span = document.createElement("span");
+                            span.innerHTML = v.display_sitename;
+
+                            li.appendChild(a);
+                            li.appendChild(span);
+                            list.appendChild(li);
+
+                        });
+                    } else {
+                        const s = parseInt(target.status / 100);
+                        let errMsg = null;
+                        if (s == 4) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청 주소가 잘못되었습니다.";
+                        } else if (s == 5) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 서버의 응답이 없습니다.";
+                        } else {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청에 실패했습니다.";
+                        }
+                        alert(errMsg);
+                    }
+                }
+            };
+            xhr.open(method, url);
+            xhr.setRequestHeader("Authorization", "KakaoAK a198b5bd50d482160fd20f1a06e9b908");
+            xhr.send();
+        }
+
+        document.querySelector("#searchForm").addEventListener("submit", e => {
+            e.preventDefault();
+
+            const queryField = document.querySelector("#query");
+            const query = queryField.value.trim();
+
+            if (!query) {
+                alert("검색어를 입력하세요.");
+                queryField.focus();
+                return
+            }
+
+            get_image_search(query);
+        });
+    </script>
+</body>
+
+</html>
