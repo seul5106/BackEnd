@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: Arial;
+        }
+        
+        ul,
+        li {
+            list-style: none;
+        }
+        
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+        
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+        
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        
+        .tab button.active {
+            background-color: #ccc;
+        }
+        
+        .tabcontent {
+            display: none;
+            border-top: none;
+        }
+        
+        .tabcontent.active {
+            display: block;
+        }
+        
+        li {
+            border-bottom: 1px solid rgba(238, 238, 238, 0.568);
+            padding: 30px 0;
+        }
+        
+        li a {
+            text-align: left;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        li h2 {
+            font-size: 15px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Kakao Search</h1>
+
+    <form id="searchForm">
+        <fieldset>
+            <input type="search" id="query" placeholder="Search ..." />
+            <button type="submit">검색</button>
+        </fieldset>
+    </form>
+
+    <div class="tab">
+        <button class="tablinks active" data-tab="webTab">웹</button>
+        <button class="tablinks" data-tab="cafeTab">카페</button>
+        <button class="tablinks" data-tab="blogTab">블로그</button>
+    </div>
+
+    <div id="webTab" class="tabcontent active">
+        <ul id="webcontent"></ul>
+    </div>
+
+    <div id="cafeTab" class="tabcontent">
+        <ul id="cafecontent"></ul>
+    </div>
+
+    <div id="blogTab" class="tabcontent">
+        <ul id="blogcontent"></ul>
+    </div>
+
+    <script>
+        const tablinks = document.querySelectorAll(".tablinks");
+
+        for (const tab of tablinks) {
+            tab.addEventListener("click", e => {
+                for (const item of document.querySelectorAll(".tablinks")) {
+                    item.classList.remove("active");
+                }
+                e.currentTarget.classList.add("active");
+
+                for (const tc of document.querySelectorAll(".tabcontent")) {
+                    tc.classList.remove("active");
+                }
+
+                const category = e.currentTarget.dataset.tab;
+                document.getElementById(category).classList.add("active");
+            });
+        }
+
+        function get_web_search(query) {
+            const list = document.querySelector("#webcontent");
+
+            Array.from(list.getElementsByTagName("li")).map((v, i) => {
+                list.removeChild(v);
+            });
+            const xhr = new XMLHttpRequest();
+            const method = "GET";
+            const url = "https://dapi.kakao.com/v2/search/web?query=" + query + "&page=1&size=50";
+
+            xhr.onreadystatechange = e => {
+                const {
+                    target
+                } = e;
+
+                if (target.readyState == XMLHttpRequest.DONE) {
+                    if (target.status == 200) {
+                        const req = JSON.parse(target.response);
+                        const listBody = document.querySelector("#webcontent");
+                        console.log(req.documents);
+                        req.documents.map((v, i) => {
+                            const li = document.createElement("li");
+
+                            const a = document.createElement("a");
+                            const h2 = document.createElement("h2");
+                            a.setAttribute("href", v.url);
+                            a.setAttribute("target", "_blank");
+                            a.innerHTML = v.title
+                            h2.innerHTML = v.contents;
+                            li.appendChild(a);
+                            li.appendChild(h2);
+                            list.appendChild(li);
+
+                        });
+                    } else {
+                        const s = parseInt(target.status / 100);
+                        let errMsg = null;
+                        if (s == 4) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청 주소가 잘못되었습니다.";
+                        } else if (s == 5) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 서버의 응답이 없습니다.";
+                        } else {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청에 실패했습니다.";
+                        }
+                        alert(errMsg);
+                    }
+                }
+            };
+            xhr.open(method, url);
+            xhr.setRequestHeader("Authorization", "KakaoAK a198b5bd50d482160fd20f1a06e9b908");
+            xhr.send();
+        }
+
+        function get_cafe_search(query) {
+            const list = document.querySelector("#cafecontent");
+
+            Array.from(list.getElementsByTagName("li")).map((v, i) => {
+                list.removeChild(v);
+            });
+            const xhr = new XMLHttpRequest();
+            const method = "GET";
+            const url = "https://dapi.kakao.com/v2/search/cafe?query=" + query + "&page=1&size=50";
+
+            xhr.onreadystatechange = e => {
+                const {
+                    target
+                } = e;
+
+                if (target.readyState == XMLHttpRequest.DONE) {
+                    if (target.status == 200) {
+                        const req = JSON.parse(target.response);
+                        const listBody = document.querySelector("#cafecontent");
+                        console.log(req.documents);
+                        req.documents.map((v, i) => {
+                            const li = document.createElement("li");
+
+                            const a = document.createElement("a");
+                            const h2 = document.createElement("h2");
+                            a.setAttribute("href", v.url);
+                            a.setAttribute("target", "_blank");
+                            a.innerHTML = v.title
+                            h2.innerHTML = v.contents;
+                            li.appendChild(a);
+                            li.appendChild(h2);
+                            list.appendChild(li);
+
+                        });
+                    } else {
+                        const s = parseInt(target.status / 100);
+                        let errMsg = null;
+                        if (s == 4) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청 주소가 잘못되었습니다.";
+                        } else if (s == 5) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 서버의 응답이 없습니다.";
+                        } else {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청에 실패했습니다.";
+                        }
+                        alert(errMsg);
+                    }
+                }
+            };
+            xhr.open(method, url);
+            xhr.setRequestHeader("Authorization", "KakaoAK a198b5bd50d482160fd20f1a06e9b908");
+            xhr.send();
+        }
+
+        function get_blog_search(query) {
+            const list = document.querySelector("#blogcontent");
+
+            Array.from(list.getElementsByTagName("li")).map((v, i) => {
+                list.removeChild(v);
+            });
+            const xhr = new XMLHttpRequest();
+            const method = "GET";
+            const url = "https://dapi.kakao.com/v2/search/blog?query=" + query + "&page=1&size=50";
+
+            xhr.onreadystatechange = e => {
+                const {
+                    target
+                } = e;
+
+                if (target.readyState == XMLHttpRequest.DONE) {
+                    if (target.status == 200) {
+                        const req = JSON.parse(target.response);
+                        const listBody = document.querySelector("#blogcontent");
+                        console.log(req.documents);
+                        req.documents.map((v, i) => {
+                            const li = document.createElement("li");
+
+                            const a = document.createElement("a");
+                            const h2 = document.createElement("h2");
+                            a.setAttribute("href", v.url);
+                            a.setAttribute("target", "_blank");
+                            a.innerHTML = v.title
+                            h2.innerHTML = v.contents;
+                            li.appendChild(a);
+                            li.appendChild(h2);
+                            list.appendChild(li);
+
+                        });
+                    } else {
+                        const s = parseInt(target.status / 100);
+                        let errMsg = null;
+                        if (s == 4) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청 주소가 잘못되었습니다.";
+                        } else if (s == 5) {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 서버의 응답이 없습니다.";
+                        } else {
+                            errMsg = "[" + target.status + "]" + target.statusText + "- 요청에 실패했습니다.";
+                        }
+                        alert(errMsg);
+                    }
+                }
+            };
+            xhr.open(method, url);
+            xhr.setRequestHeader("Authorization", "KakaoAK a198b5bd50d482160fd20f1a06e9b908");
+            xhr.send();
+        }
+
+        document.querySelector("#searchForm").addEventListener("submit", e => {
+            e.preventDefault();
+
+            const queryField = document.querySelector("#query");
+            const query = queryField.value.trim();
+
+            if (!query) {
+                alert("검색어를 입력하세요.");
+                queryField.focus();
+                return
+            }
+
+            get_web_search(query);
+            get_cafe_search(query);
+            get_blog_search(query);
+
+
+        });
+    </script>
+
+
+</body>
+
+</html>

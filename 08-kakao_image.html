@@ -81,7 +81,7 @@
                 if (target.readyState == XMLHttpRequest.DONE) {
                     if (target.status == 200) {
                         const req = JSON.parse(target.response);
-                        const listBody = document.querySelector("#list-body");
+
                         req.documents.map((v, i) => {
                             const li = document.createElement("li");
 

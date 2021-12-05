@@ -59,6 +59,8 @@
                             listBody.removeChild(v);
                         });
 
+
+
                         req.boxOfficeResult.dailyBoxOfficeList.map((v, i) => {
                             const tr = document.createElement("tr");
 
@@ -88,7 +90,7 @@
                         console.log(movie_labels);
 
                         const myChart = document.getElementById("Chart").getContext("2d");
-
+                        const myChartRemove = document.getElementById("graph-container")
                         const barChar = new Chart(myChart, {
                             type: "bar", // pie, line, donut, polarArea ...
                             data: {
@@ -109,6 +111,11 @@
                                 }, ],
                             },
                         });
+                        if (myChart != null) {
+                            myChartRemove.removeChild(canvas);
+
+
+                        }
 
 
                     } else {
@@ -149,6 +156,7 @@
         document.querySelector("#targetDt").addEventListener("change", (e) => {
             const date = e.currentTarget.value.replaceAll("-", "");
             console.log(date);
+
             getMovieRank(date);
         });
 
