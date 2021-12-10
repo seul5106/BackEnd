@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>영어 속담</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>속담</th>
+                <th>뜻</th>
+            </tr>
+        </thead>
+        <tbody id="proverb-list"></tbody>
+    </table>
+
+    <script id="tmpl" type="text/x-handlebars-template">
+        {{#each speak.data}}
+        <tr>
+            <td>{{eng}}</td>
+            <td>{{kor}}</td>
+        </tr>
+        {{/each}}
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script src="./backend/AjaxHelper.js"></script>
+    <script>
+        ajaxHandlebar({
+            url: "./backend/data.json",
+            tmpl: "#tmpl",
+            view: "#proverb-list"
+        });
+    </script>
+    </script>
+</body>
+
+</html>

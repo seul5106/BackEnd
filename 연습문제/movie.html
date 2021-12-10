@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script src="movie.js"></script>
+</head>
+
+<body>
+    <h1>Actor Search</h1>
+
+    <form id="searchForm">
+        <fieldset>
+            <input type="search" id="query" placeholder="Search ..." />
+            <button type="submit">검색</button>
+        </fieldset>
+    </form>
+
+    <ul id="list">
+
+    </ul>
+    <table border="1">
+        <thead>
+            <tr>영화인</tr>
+            <tr>상세정보</tr>
+        </thead>
+    </table>
+
+    <script>
+        document.querySelector("#searchForm").addEventListener("submit", e => {
+            e.preventDefault();
+
+            const queryField = document.querySelector("#query");
+            const query = queryField.value.trim();
+
+            if (!query) {
+                alert("검색어를 입력하세요.");
+                queryField.focus();
+                return
+            }
+
+            get_actor_search(query);
+        });
+    </script>
+</body>
+
+</html>
