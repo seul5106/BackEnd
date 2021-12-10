@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        ul,
+        li {
+            list-style: none;
+        }
+        
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+        
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+        
+        .tab button:hover {
+            background-color: #ccc;
+        }
+        
+        .tab button.active {
+            background-color: #ddd;
+        }
+        
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+        
+        .tabcontent.active {
+            display: block;
+        }
+        
+        a {
+            text-decoration: none;
+            color: black;
+        }
+        
+        li {
+            border-bottom: 1px solid;
+            margin-bottom: 10px;
+            line-height: 5px;
+            height: 100px;
+        }
+        
+        p {
+            line-height: 50px;
+            height: 50px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>KaKao Search</h1>
+
+    <form id="searchForm">
+        <fieldset>
+            <input type="search" id="query" placeholder="Search..." />
+            <button type="submit">검색</button>
+        </fieldset>
+    </form>
+
+    <div class="tab">
+        <button class="tablinks" data-deptno="101">웹</button>
+        <button class="tablinks" data-deptno="102">
+            카페</button>
+        <button class="tablinks" data-deptno="201">
+            블로그</button>
+    </div>
+    <ul id="list"></ul>
+    <script src="kakao_web,blog,cafe_search.js"></script>
+    <script>
+        const my = new Calling();
+
+        // 폼 이벤트
+        document.querySelector('#searchForm').addEventListener("submit", e => {
+                e.preventDefault();
+
+                const queryField = document.querySelector("#query");
+                const query = queryField.value.trim();
+
+                if (!query) {
+                    Array.from(list.getElementsByTagName("li")).map((v, i) => {
+                        list.removeChild(v);
+                    })
+                    alert("검색어를 입력하세요");
+                    queryField.focus();
+                    do_query = null;
+                    return
+                }
+                // 탭링크에 전달할 문자열 복사
+                do_query = query;
+                // 값전달
+                // web_call(query);
+                my.call("web", do_query);
+            })
+            // 탭링크 이벤트
+        document.querySelectorAll(".tablinks").forEach((v, i) => {
+            v.addEventListener("click", e => {
+                // 현재 클릭된 항목의 인덱스 번호
+                const currentIndex = i;
+                if (do_query == null) {
+                    return;
+                } else if (i == 0) {
+                    my.call("web", do_query);
+                } else if (i == 1) {
+                    my.call("cafe", do_query);
+                } else {
+                    my.call("blog", do_query);
+                }
+
+                // 클릭된 버튼에 적용된 'data-target'값을 취득
+                const currentTarget = e.currentTarget.dataset.target;
+
+                // 모든 버튼에 대한 active클래스 해제
+                document.querySelectorAll(".tablinks").forEach((v1, i1) => {
+                    if (currentIndex == i1) {
+                        v1.classList.add('active');
+                    } else {
+                        v1.classList.remove('active');
+                    }
+                });
+            })
+        })
+    </script>
+</body>
+
+</html>
