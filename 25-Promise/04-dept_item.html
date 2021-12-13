@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <h1>Simple Get</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>학과번호</th>
+                <th>학과명</th>
+                <th>학과위치</th>
+            </tr>
+        </thead>
+        <tbody id="list-body"></tbody>
+    </table>
+
+    <script src="/backend/ajaxPromiseHelper.js"></script>
+    <script>
+        (async() => {
+            let json = null;
+            try {
+                json = await ajaxPromiseHelper("/backend/dept_list.json");
+                console.log(json);
+            } catch (e) {
+                console.log(e);
+                alert(e.msg);
+            }
+            const listBody = document.querySelector("#list-body");
+            json.item.map((v, i) => {
+                console.log(json.item);
+                const tr = document.createElement("tr");
+
+                const td1 = document.createElement("td");
+                td1.innerHTML = v.deptno;
+
+                const td2 = document.createElement("td");
+                td2.innerHTML = v.dname;
+
+                const td3 = document.createElement("td");
+                td3.innerHTML = v.loc;
+
+                tr.appendChild(td1);
+                tr.appendChild(td2);
+                tr.appendChild(td3);
+
+                listBody.appendChild(tr);
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

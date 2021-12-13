@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="loading"></div>
+    <h1>Async Await</h1>
+    <a href="#" id="btn">load json</a>
+    <div id="console"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.querySelector("#btn").addEventListener("click", e => {
+            e.preventDefault();
+
+            (async() => {
+                let json = null;
+                try {
+                    const response = await axios.get("/backend/dept_list.json")
+                    json = response.data;
+                } catch (e) {
+                    console.error(e);
+                    console.error(e.response.status);
+                    console.error(e.response.data);
+                }
+                document.querySelector("#console").insertAdjacentHTML("beforeend", JSON.stringify(json));
+            })();
+
+        });
+    </script>
+</body>
+
+</html>
