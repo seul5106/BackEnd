@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>영화인 검색</h1>
+    <hr/>
+    <form id="search">
+        <input type="search" id="query" />
+        <button type="submit">검색</button>
+    </form>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <td>코드</td>
+                <td>이름</td>
+                <td>성별</td>
+                <td>분류명</td>
+                <td>참여영화</td>
+            </tr>
+        </thead>
+        <tbody id="peoples">
+
+        </tbody>
+    </table>
+    <script id="tmpl" type="text/x-handlebars-template">
+        <tr>
+            <td>{{peopleInfoResult.peopleInfo.peopleCd}}</td>
+            <td>{{peopleInfoResult.peopleInfo.peopleNm}}</td>
+            <td>{{peopleInfoResult.peopleInfo.sex}}</td>
+            <td>{{peopleInfoResult.peopleInfo.repRoleNm}}</td>
+            <td>
+                <ul id="fillmo-{{peopleInfoResult.peopleInfo.peopleCd}}"></ul>
+            </td>
+        </tr>
+    </script>
+    <script id="tmpl-fillmos" type="text/x-handlebars-template">
+        <li>
+            {{movieInfoResult.movieInfo.movieNm}} ({{movieInfoResult.movieInfo.prdtYear}})
+        </li>
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script src="./backend/AjaxHelper.js"></script>
+    <script>
+        const API_KEY = "e41f0d679a6d86c1b0271ce7a423b325"
+        document.querySelector("#search").addEventListener("submit", e => {
+            e.preventDefault();
+
+            const peoples = document.querySelector("#peoples");
+            const tr = peoples.getElementsByTagName("tr");
+
+            Array.from(tr).map((v, i) => {
+                peoples.removeChild(v);
+            })
+
+            const query = document.querySelector("#query").value;
+
+            ajaxHelper({
+                url: "http://www.kobis.or.kr/kobisopenapi/webservice/rest/people/searchPeopleList.json?key=" + API_KEY + "&peopleNm&date=" + new Date() + "&curPage=1&quer=" + query,
+                success: json => {
+                    const peopleList = json.peopleListResult.peopleList;
+
+                    peopleList.map((v, i) => {
+                        const peopleCd = v.peopleCd;
+                        ajaxHelper({
+                            url: "http://www.kobis.or.kr/kobisopenapi/webservice/rest/people/searchPeopleInfo.json?peopleCd=" + peopleCd + "&key=" + API_KEY,
+                            success: json => {
+
+
+                                const html = document.querySelector("#tmpl").innerHTML;
+                                const template = Handlebars.compile(html);
+                                const result = template(json);
+                                document.querySelector("#peoples").insertAdjacentHTML("beforeend", result);
+
+                                const currentFillo = document.querySelector("#fillmo-" + json.peopleInfoResult.peopleInfo.peopleCd)
+                                const filmo = json.peopleInfoResult.peopleInfo.filmos;
+                                console.log(filmo);
+                                filmo.map((v, i) => {
+                                    ajaxHelper({
+                                        url: "http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json?key=" + API_KEY + "&movieCd=" + v.movieCd,
+                                        success: json => {
+                                            const html = document.querySelector("#tmpl-fillmos").innerHTML;
+                                            const template = Handlebars.compile(html);
+                                            const result = template(json);
+                                            currentFillo.insertAdjacentHTML("beforeend", result);
+                                        }
+                                    });
+                                })
+                            }
+
+                        });
+                    })
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
