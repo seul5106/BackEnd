@@ -45,8 +45,6 @@
                     if (target.status == 200) {
                         const req = JSON.parse(target.response);
                         const listBody = document.querySelector("#list-body");
-                        const movie_labels = new Array();
-                        const audiCnt_data = new Array();
                         Array.from(listBody.getElementsByTagName("tr")).forEach((v, i) => {
                             listBody.removeChild(v);
                         });
@@ -60,11 +58,9 @@
 
                             const td2 = document.createElement("td");
                             td2.innerHTML = v.movieNm;
-                            movie_labels[i] = v.movieNm;
 
                             const td3 = document.createElement("td");
                             td3.innerHTML = v.audiCnt;
-                            audiCnt_data[i] = v.audiCnt;
 
                             const td4 = document.createElement("td");
                             td4.innerHTML = v.openDt;
@@ -77,41 +73,6 @@
                             listBody.appendChild(tr);
                         });
 
-                        var context = document
-                            .getElementById('myChart')
-                            .getContext('2d');
-                        var myChart = new Chart(context, {
-
-                            type: 'bar', // 차트의 형태
-                            data: { // 차트에 들어갈 데이터
-                                labels: movie_labels,
-                                datasets: [{ //데이터
-                                    label: '관객수', //차트 제목
-                                    fill: false, // line 형태일 때, 선 안쪽을 채우는지 안채우는지
-                                    data: audiCnt_data,
-                                    backgroundColor: [
-                                        //색상
-                                        'rgba(255, 99, 132, 0.2)',
-                                        'rgba(54, 162, 235, 0.2)',
-                                        'rgba(255, 206, 86, 0.2)',
-                                        'rgba(75, 192, 192, 0.2)',
-                                        'rgba(153, 102, 255, 0.2)',
-                                        'rgba(255, 159, 64, 0.2)'
-                                    ],
-                                    borderColor: [
-                                        //경계선 색상
-                                        'rgba(255, 99, 132, 1)',
-                                        'rgba(54, 162, 235, 1)',
-                                        'rgba(255, 206, 86, 1)',
-                                        'rgba(75, 192, 192, 1)',
-                                        'rgba(153, 102, 255, 1)',
-                                        'rgba(255, 159, 64, 1)'
-                                    ],
-                                    borderWidth: 1 //경계선 굵기
-                                }]
-                            },
-
-                        });
 
                     } else {
                         const s = parseInt(target.status / 100);

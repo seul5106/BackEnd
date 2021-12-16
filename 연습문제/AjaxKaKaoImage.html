@@ -1,0 +1,124 @@
+<!---->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        #list li {
+            width: 150px;
+            height: 180px;
+            float: left;
+            margin: 10px;
+        }
+        
+        #list li a {
+            display: block;
+            width: 150px;
+            height: 150px;
+            background-position: center center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: scroll;
+            text-decoration: none;
+            color: #000;
+        }
+        
+        #list li span {
+            display: block;
+            font-size: 14px;
+            padding: 5px 10px;
+            text-align: center;
+        }
+        
+        #list:after {
+            content: "";
+            display: block;
+            float: none;
+            clear: both;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Kakao Image Search</h1>
+
+    <form id="searchForm">
+        <fieldset>
+            <input type="search" id="query" placeholder="Search ..." />
+            <button type="submit">검색</button>
+        </fieldset>
+    </form>
+
+
+
+
+
+    <ul id="list">
+
+        <script id="tmpl" type="text/x-handlebars-template">
+            <li>
+                <a target="_blank" style="background-image: url({{thumbnail_url}})" href={{title}}></a>
+                <span>
+                    {{display_sitename}}
+                </span>
+            </li>
+        </script>
+    </ul>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script src="/backend/ajaxPromiseHelper.js"></script>
+    <script>
+        document.querySelector("#searchForm").addEventListener("submit", e => {
+            e.preventDefault();
+            const list = document.querySelector("#list");
+            Array.from(list.getElementsByTagName("li")).map((v, i) => {
+                list.removeChild(v);
+            });
+
+            const queryField = document.querySelector("#query");
+            const query = queryField.value.trim();
+
+            if (!query) {
+                alert("검색어를 입력하세요.");
+                queryField.focus();
+                return
+            };
+            let headers = {
+                "Authorization": "KakaoAK a198b5bd50d482160fd20f1a06e9b908"
+            };
+
+            (async() => {
+                let json = null;
+                try {
+                    json = await ajaxPromiseHelper("https://dapi.kakao.com/v2/search/image?query=" + query + "&page=1&size=50", "GET", headers);
+                    console.log(json);
+
+                } catch (e) {
+                    console.log(e);
+                    alert(e.msg);
+                    return;
+                }
+
+                json.documents.map((v, i) => {
+                    const html = document.querySelector("#tmpl").innerHTML;
+                    const template = Handlebars.compile(html);
+                    const result = template(v);
+                    console.log(v);
+                    document.querySelector("#list").insertAdjacentHTML("beforeend", result);
+                })
+            })();
+
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: Arial;
+        }
+        
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+        
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+        
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        
+        .tab button.active {
+            background-color: #ccc;
+        }
+        
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+        
+        .tabcontent.active {
+            display: block;
+        }
+        
+        dt {
+            font-weight: bold;
+            margin: 10px 10px;
+            font-size: 20px;
+        }
+        
+        dt:before {
+            content: "@";
+            padding-right: 5px;
+        }
+        
+        dd {
+            font-weight: normal;
+            margin-bottom: 30px;
+            border-left: 5px #d5d5d5 solid;
+            padding-left: 15px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tab">
+        <button class="tablinks active" data-deptno="101">컴퓨터공학과</button>
+        <button class="tablinks" data-deptno="102">멀티미디어학과</button>
+        <button class="tablinks" data-deptno="201">전자공학과</button>
+        <button class="tablinks" data-deptno="202">기계공학과</button>
+    </div>
+
+    <div class="tabcontent active">
+        <dt>학과번호</dt>
+        <dd class="deptno"></dd>
+        <dt>학과명</dt>
+        <dd class="dname"></dd>
+        <dt>학과위치</dt>
+        <dd class="loc"></dd>
+    </div>
+
+
+
+    <script src="/backend/ajaxPromiseHelper.js"></script>
+    <script>
+        document.querySelectorAll(".tablinks").forEach((v, i) => {
+            v.addEventListener("click", e => {
+                const currentIndex = i;
+                const currentTarget = e.currentTarget.dataset.target;
+
+                document.querySelectorAll(".tablinks").forEach((v1, i1) => {
+                    if (currentIndex == i1) {
+                        v1.classList.add("active");
+                    } else {
+                        v1.classList.remove("active");
+                    }
+                });
+
+                const current = e.currentTarget;
+
+                const deptno = current.dataset.deptno;
+                console.log(deptno);
+
+                ajaxPromiseHelper("http://itpaper.co.kr/data/dept_item.php?deptno=" + deptno).then(json => {
+                    console.log(json);
+                    document.querySelector(".deptno").innerHTML = json.deptno;
+                    document.querySelector(".dname").innerHTML = json.dname;
+                    document.querySelector(".loc").innerHTML = json.loc;
+
+                }).catch(e => {
+                    console.log(e);
+                })
+            });
+        });
+
+        ajaxPromiseHelper("http://itpaper.co.kr/data/dept_item.php?deptno=101").then(json => {
+            console.log(json);
+            document.querySelector(".deptno").innerHTML = json.deptno;
+            document.querySelector(".dname").innerHTML = json.dname;
+            document.querySelector(".loc").innerHTML = json.loc;
+
+        }).catch(e => {
+            console.log(e);
+        });
+    </script>
+</body>
+
+</html>

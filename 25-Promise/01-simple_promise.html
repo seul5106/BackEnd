@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        dt {
+            font-weight: bold;
+            margin: 10px 10px;
+            font-size: 20px;
+        }
+        
+        dt:before {
+            content: "@";
+            padding-right: 5px;
+        }
+        
+        dd {
+            font-weight: normal;
+            margin-bottom: 30px;
+            border-left: 5px #d5d5d5 solid;
+            padding-left: 15px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Dept Item</h1>
+
+    <div id="dept-item">
+        <dt>학과번호</dt>
+        <dd class="deptno"></dd>
+        <dt>학과명</dt>
+        <dd class="dname"></dd>
+        <dt>학과위치</dt>
+        <dd class="loc"></dd>
+    </div>
+    <script>
+        function getDeptItem() {
+
+            return new Promise((resolve, reject) => {
+
+                const xhr = new XMLHttpRequest();
+                const method = "GET";
+                const url = "../backend/data.json";
+                xhr.open(method, url);
+                xhr.onreadystatechange = e => {
+                    const ajax = e.target;
+
+                    if (ajax.readyState == XMLHttpRequest.DONE) {
+                        if (ajax.status == 200) {
+                            const json = JSON.parse(ajax.responseText);
+                            resolve(json);
+                        } else {
+                            reject({
+                                status: ajax.status,
+                                text: ajax.statusText
+                            })
+                        }
+                    }
+                };
+
+                xhr.send();
+            });
+        }
+
+        getDeptItem().then(json => {
+            console.log(json);
+        }).catch(e => {
+            console.log(e);
+        })
+    </script>
+</body>
+
+</html>
