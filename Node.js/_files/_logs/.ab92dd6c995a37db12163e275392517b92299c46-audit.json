@@ -1,0 +1,19 @@
+{
+    "keep": {
+        "days": false,
+        "amount": 50
+    },
+    "auditLog": "C:\\Users\\seul5\\BackEnd\\Node.js\\_files\\_logs\\.ab92dd6c995a37db12163e275392517b92299c46-audit.json",
+    "files": [
+        {
+            "date": 1639619010093,
+            "name": "C:\\Users\\seul5\\BackEnd\\Node.js\\_files\\_logs\\log_211216.log",
+            "hash": "5f5beff04799ef05d44b4f3674687c18"
+        },
+        {
+            "date": 1639969255491,
+            "name": "C:\\Users\\seul5\\BackEnd\\Node.js\\_files\\_logs\\log_211220.log",
+            "hash": "a44deeb402c61cfc94e830e6d707587b"
+        }
+    ]
+}
