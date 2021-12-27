@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form method='get'>
+        <div>
+            <label for='region'><h2>지역명 : </h2> </label>
+            <input type="text" name="region" id='region' />
+        </div>
+        <button type='button' id="btn">결과확인</button>
+    </form>
+
+    <script>
+        document.querySelector("#btn").addEventListener('click', e => {
+            const region = document.getElementById("region").value;
+            const url = '/today_covid19/' + region;
+            window.location.href = url;
+        });
+    </script>
+</body>
+
+</html>
