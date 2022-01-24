@@ -19,5 +19,4 @@ const axios = require('axios');
     json.map((v, i) => {
         console.log("영화제목 : " + v.movieNm + "  순위 : " + v.rnum + "  관객수 : " + v.audiCnt);
     })
-
 })();

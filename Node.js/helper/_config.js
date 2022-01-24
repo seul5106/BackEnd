@@ -39,5 +39,13 @@ module.exports = {
     thumbnail: {
         sizes: [640, 750, 1020],
         dir: path.join(__dirname, "../_files/thumb")
+    },
+
+    database: {
+        host: 'localhost',
+        port: 3306,
+        user: 'root',
+        password: 'root',
+        database: "myschool"
     }
 };

@@ -3,6 +3,10 @@ const logger = require('../helper/LogHelper');
 const util = require("../helper/UtillHelper");
 const fileHelper = require('../helper/FileHelper');
 const webHelper = require('../helper/WebHelper');
+const BadRequestException = require('../12-RestfulAPI/exceptions/BadRequestException');
+const RuntimeException = require('../12-RestfulAPI/exceptions/RuntimeException');
+const PageNotFoundException = require('../12-RestfulAPI/exceptions/PageNotFoundException');
+
 
 const url = require("url");
 const path = require("path");
@@ -66,8 +70,7 @@ app.use(
         saveUninitialized: false
     }));
 
-
-
+app.use(webHelper());
 
 app.use("/", static(config.public_path));
 app.use("/upload", static(config.upload.dir));
@@ -77,51 +80,21 @@ app.use(favicon(config.favicon_path));
 const router = express.Router();
 app.use("/", router);
 
-
-
-
-
-app.use(require('./routes/Setup')(app));
-app.use(require('./routes/Params')(app));
-app.use(require('./routes/Cookie')(app));
-app.use(require('./routes/Session')(app));
-app.use(require('./routes/FileUpload')(app));
-app.use(require('./routes/SendMail')(app));
-app.use(require('./routes/calc')(app));
-app.use(require('./routes/covid19')(app));
+app.use(require('./Department')(app));
+app.use(require('./Student')(app));
+app.use(require('./members')(app));
 
 app.use((err, req, res, next) => {
-    logger.error(err);
-
-    let status = 500;
-    let msg = null;
-
-    if (!isNaN(err.message)) {
-        status = parseInt(err.message);
+    if (err instanceof BadRequestException) {
+        res.sendError(err);
+    } else {
+        res.sendError(new RuntimeException(err.message));
     }
-
-    switch (status) {
-        case 400:
-            msg = "필수 파라미터가 없습니다.";
-            break;
-        default:
-            msg = "요청을 처리하는데 실패했습니다.";
-            break;
-    }
-
-    res.status(status).send({
-        "rt": status,
-        "rtmsg": "msg",
-        "pubdate": new Date().toISOString()
-    });
 });
 
 app.use("*", (req, res, next) => {
-    res.status(404).send({
-        "rt": 404,
-        "rtmsg": "페이지를 찾을 수 없습니다.",
-        "pubdate": new Date().toISOString()
-    });
+    const err = new PageNotFoundException();
+    res.sendError(err);
 });
 
 
